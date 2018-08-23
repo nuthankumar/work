@@ -22,6 +22,15 @@ public class Jsons {
 	            Map<String,JSONArray> hmap = new HashMap<String,JSONArray>();
 	            JSONArray makerobj = (JSONArray) jsonObject.get("Maker");
 	            JSONArray checkerobj = (JSONArray) jsonObject.get("Checker");
+	            JSONArray navigationItems = new JSONArray();
+	            for(Object o: makerobj){
+	                if ( o instanceof JSONObject ) {
+
+
+	                }
+	            }
+	            
+	            
 	            hmap.put("navigationItems", makerobj);
 	            JSONObject result = new JSONObject();
 	            result.putAll(hmap);

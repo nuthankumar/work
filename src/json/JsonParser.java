@@ -20,9 +20,8 @@ public class JsonParser {
 
         try {     
             Object obj = parser.parse(new FileReader("C:\\work\\Miscellaneous\\src\\config.json"));
-            String array[] = {"Maker","Checker"};
+            String array[] = {"Maker"};
             JSONObject jsonObject =  (JSONObject) obj;
-            
             merger(array,jsonObject);
             
         } catch (FileNotFoundException e) {
@@ -33,36 +32,49 @@ public class JsonParser {
             e.printStackTrace();
         }
     }
-	private static void merger(String[] array,JSONObject jsonObject) {
-		JSONArray result= new JSONArray();
-		JSONArray role = new JSONArray();
-        if(array.length<1) {
-        	System.out.println("Empty");
-        }
-		if(array.length==1) {
-			result = (JSONArray) jsonObject.get(array[0]);
+
+	@SuppressWarnings("unchecked")
+	private static void merger(String[] array, JSONObject jsonObject) {
+		Map<String, JSONArray> hmap = new HashMap<String, JSONArray>();
+		JSONArray navigationItems = new JSONArray();
+		JSONObject result = new JSONObject();
+		if (array.length < 1) {
+			System.out.println("Empty");
 		}
-		if(array.length>1) {
-			result = (JSONArray) jsonObject.get(array[0]);
-			JSONObject temp = new JSONObject();
-	        JSONArray tempArray = new JSONArray();
-			for(int i=1;i<array.length;i++) {
-				role=(JSONArray) jsonObject.get(array[i]);
-				for(int j=0;j<role.size(); j++) {
-		        	temp = (JSONObject) role.get(j);
-		        	for(int k=0;j<temp.size(); k++) {
-		        		temp.get("label");
-		        		tempArray = (JSONArray) temp.get("children");
-		        		for(int l=0;l<tempArray.size();l++) {
-		        			System.out.println(temp.get("label"));
-		        		}
-		        	}
-		        }
+		if (array.length == 1) {
+			navigationItems = (JSONArray) jsonObject.get(array[0]);
+			hmap.put("navigationItems", navigationItems);
+			result.putAll(hmap);
+		}
+		if (array.length > 1) {
+			for (String arr : array) {
+				JSONArray temp = (JSONArray) jsonObject.get(arr);
+				boolean flag = true;
+				for(Object obj:temp) {
+					JSONObject obj3=(JSONObject)obj;
+					for(Object navObj: navigationItems) {
+						JSONObject navObj3 = (JSONObject)navObj;
+						if(obj3.get("label").equals(navObj3.get("label"))) {
+							JSONArray tempArray = (JSONArray)obj3.get("children");
+							JSONArray navArray = (JSONArray)navObj3.get("children");
+							for(Object obj4 : tempArray) {
+								JSONObject test = (JSONObject)obj4;
+								if(!navArray.contains((JSONObject)test)) {
+									navArray.add(test);
+								}
+							}
+							flag=false;
+						}
+					}
+					if(flag) {
+					navigationItems.add((JSONObject)obj);
+					}
+				}
 			}
-			
+			System.out.println(navigationItems.toJSONString());
+			hmap.put("navigationItems", navigationItems);
+			result.putAll(hmap);
 		}
-        
-        
-        System.out.println(result.toJSONString());
+		
 	}
 }
